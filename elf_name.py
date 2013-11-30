@@ -97,16 +97,22 @@ def elf_name_random():
     """ Randomly generate Elf name """
     return letter_map[random.choice(letter_map.keys())] + " " + month_map[random.choice(month_map.keys())]
 
-def elf_name(firstname,birthday):
+def elf_name(firstname=None,birthday=None):
     """ Given firstname and birthday, return Elf name. 
         firstname =    string A-Z
         birthday  =    string YYYY-MM-DD  """
+    if (not firstname or not birthday): # fall back to random name
+        return elf_name_random()
     birth_month = strptime(birthday,"%Y-%m-%d").tm_mon
     return "%s %s" % (letter_map[firstname[0].upper()], month_map[birth_month])
 
 if __name__ == '__main__':
+    print "Elf Names..."
+    print "=" * 10
     print "1. Test - scenario 1 - "
     print elf_name_random()
     print elf_name_random()
-    print "1. Test - scenario 2 - "
-    print elf_name("Chayapan","1986-03-08")
+    print "=" * 10
+    print "2. Test - scenario 2 - "
+    print elf_name("Chayapan","1982-03-18")
+    print elf_name("Chayapan")
