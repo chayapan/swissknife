@@ -1,14 +1,50 @@
 #!/usr/bin/env python
+"""
+>>> ZFS().list_zfs()[0]
+
+
+"""
+
 import os,subprocess,datetime,logging
-logging.basicConfig(	filename='/tmp/snapshot.log',
+logging.basicConfig(	filename='zfs_snapshot.log',
 			level=logging.INFO,
 			format='%(asctime)s %(message)s')
 ZFS = '/sbin/zfs'
-ZPOOL = '/sbin/zpool'
+#ZPOOL = '/sbin/zpool'
+ZPOOL = '/usr/local/sbin/zpool'
+
 snaptime = datetime.datetime.now().strftime('%Y%m%d.h%H')
 
-err=open("/tmp/snapshot.err","w")
+err=open("/tmp/snapshot123123.err","w", 1)
 err.write(snaptime)
+
+class ZFS:
+  def pool_status(self):
+    cmd = "%s status" % (ZPOOL,)
+    out = subprocess.check_output(cmd.split(" "),stderr=subprocess.PIPE)
+    return ([l.split() for l in out.split('\n')[1:]])
+  def pool_iostat(self):
+    cmd = "%s iostat" % (ZPOOL,)
+    out = subprocess.check_output(cmd.split(" "),stderr=subprocess.PIPE)
+    return ([l.split() for l in out.split('\n')[1:]])
+  def pool_list(self):
+    cmd = "%s list" % (ZPOOL,)
+    out = subprocess.check_output(cmd.split(" "),stderr=subprocess.PIPE)
+    # ['tank', '440G', '42.8G', '32K', '/tank']
+    return ([l.split() for l in out.split('\n')[1:]])
+  def list_zfs(self):
+    cmd = "%s list" % (ZFS,)
+    out = subprocess.check_output(cmd.split(" "),stderr=subprocess.PIPE)
+    # ['tank', '440G', '42.8G', '32K', '/tank']
+    return ([l.split() for l in out.split('\n')[1:]])
+  def create_hourly_snapshot():
+    print snaptime
+    fs = "tank/vm"
+    cmd = "%(zfs)s snap %(tgt)s@%(ts)s" % {'zfs':ZFS, 'tgt':fs, 'ts':snaptime }
+    print cmd
+    subprocess.call(cmd.split(" "),stderr=err)
+
+
 
 
 def create_hourly_snapshot():
